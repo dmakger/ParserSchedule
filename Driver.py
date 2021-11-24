@@ -8,11 +8,16 @@ from selenium.webdriver.common.action_chains import ActionChains
 from bs4 import BeautifulSoup
 import time
 import pickle
+import fake_useragent
 from auth_data import kkmt_password, kkmt_login
 
 
 class DriverHelper:
     URL_LOGIN = "https://ies.unitech-mo.ru/auth"
+    HEADERS = {
+        'user-agent': fake_useragent.UserAgent().random,
+        'accept': '*/*'
+    }
 
     def __init__(self):
         self.driver = self.get_driver()
@@ -20,15 +25,15 @@ class DriverHelper:
 
     def get_driver(self):
         s = Service(ChromeDriverManager().install())
-        return webdriver.Chrome(service=s)
+        driver = webdriver.Chrome(service=s)
+        return driver
 
     def install_auth(self):
         try:
-            self.driver.get(url=self.URL_LOGIN)
-            print("Stop")
-            for sec in range(1, 4):
-                print(f"{sec}...")
-                time.sleep(1)
+            url = self.URL_LOGIN
+            self.driver.get(url=url)
+            print("Вход: Прогрузка страницы...")
+            time.sleep(2)
 
             self.driver.find_element(By.XPATH, "//li[@class='user_session_data']").click()
 
@@ -42,6 +47,7 @@ class DriverHelper:
 
             self.driver.find_element(By.XPATH, "//a[@id='main_login_link']").click()
 
+            time.sleep(1)
             #  cookies
             pickle.dump(self.driver.get_cookies(), open(self.cookie_file, "wb"))
         except Exception as ex:
@@ -50,15 +56,14 @@ class DriverHelper:
     def auth(self):
         try:
             self.driver.get(url=self.URL_LOGIN)
-            print("Stop")
-            for sec in range(1, 4):
-                print(f"{sec}...")
-                time.sleep(1)
+            print("Вход: Прогрузка страницы...")
+            time.sleep(1)
+
+            # self.driver.find_element(By.XPATH, "//li[@class='user_session_data']").click()
 
             for cookie in pickle.load(open(self.cookie_file, "rb")):
                 self.driver.add_cookie(cookie)
             self.driver.refresh()
-            time.sleep(3)
 
         except Exception as ex:
             print(ex)

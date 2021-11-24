@@ -8,13 +8,19 @@ from selenium.webdriver.common.action_chains import ActionChains
 from bs4 import BeautifulSoup
 import time
 import pickle
+
+from Schedule import Schedule
 from auth_data import kkmt_password, kkmt_login
 from Driver import DriverHelper
 
 
 def main():
     driver = DriverHelper()
+    # driver.install_auth()
     driver.auth()
+
+    schedule = Schedule(driver.driver)
+    schedule.parse()
 
 
 if __name__ == '__main__':
