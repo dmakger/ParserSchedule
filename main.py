@@ -1,6 +1,6 @@
 from Driver import DriverHelper
 from Schedule import Schedule
-from Lessons import Lessons
+from Subjects import Subjects
 
 
 def main():
@@ -9,9 +9,11 @@ def main():
     driver.auth()
 
     # Получение всего расписания
-    # schedule = Schedule(driver=driver.driver, month=10).parse()
+    schedule = Schedule(driver=driver.driver, month=10).parse()
 
-    lessons = Lessons(driver=driver.driver, term=7).parse()
+    # Получение журнала успеваемости по всем предметам
+    subjects = Subjects(driver=driver.driver, term=7, month=10).parse()
+    print(subjects)
 
 
 if __name__ == '__main__':

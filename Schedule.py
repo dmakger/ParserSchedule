@@ -9,17 +9,20 @@ class Schedule:
     URL_SCHEDULE = "https://ies.unitech-mo.ru/schedule"
 
     def __init__(self, driver, month: int = None, year: int = None):
+        """
+        driver - нужен для перемещения по ссылкам
+        month - месяц по которому нужна успеваемость
+        year - год по которому нужна успеваемость
+        """
         self.driver = driver
         self.date = datetime.date
         if month is None:
-            self.month = self.date.today().month
-        else:
-            self.month = month
+            month = self.date.today().month
+        self.month = month
 
         if year is None:
-            self.year = self.date.today().year
-        else:
-            self.year = year
+            year = self.date.today().year
+        self.year = year
 
         self.start_day = self.date(self.year, self.month, 1)
         self.end_day = self.get_end_day()
@@ -66,7 +69,6 @@ class Schedule:
         """
         soup = BeautifulSoup(html, 'html.parser')
         table = soup.find('table', class_='schedule_day_time_table')
-        num_days = len(table.find('thead').find_all('th')) - 1
         schedule = dict()
 
         items = table.find('tbody').find_all('tr')
@@ -104,6 +106,7 @@ class Schedule:
                 for key, value in week[day].items():
                     print(f"{key}: {value}")
             print("----------------------------")
+        print("Парсинг расписания завершен успешно!")
 
         return data
 
