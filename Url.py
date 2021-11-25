@@ -4,13 +4,13 @@ import time
 class Url:
     @staticmethod
     def get_url(url: str, params: dict = None):
-        """url:str -> отформатированный url"""
+        """url:str -> вернет отформатированный url"""
         if (params is None) or (len(params) == 0):
             return url
         else:
             params_str = ""
             for key, value in params.items():
-                params_str += key + "=" + value + "&"
+                params_str += str(key) + "=" + str(value) + "&"
             return url + "?" + params_str[:-1]
 
     @staticmethod

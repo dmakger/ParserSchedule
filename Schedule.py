@@ -67,7 +67,6 @@ class Schedule:
         soup = BeautifulSoup(html, 'html.parser')
         table = soup.find('table', class_='schedule_day_time_table')
         num_days = len(table.find('thead').find_all('th')) - 1
-        # schedule = [dict() for i in range(num_days)]
         schedule = dict()
 
         items = table.find('tbody').find_all('tr')
@@ -91,8 +90,7 @@ class Schedule:
         pages_count = len(range_date)
         data = list()
 
-        # for i in range(pages_count):
-        for i in range(1):
+        for i in range(pages_count):
             print(f"Парсинг страницы {i + 1} из {pages_count}...")
             html = Url.get_html(self.driver, self.URL_SCHEDULE, params={
                 "d": range_date[i]["min"] + "+-+" + range_date[i]["max"]

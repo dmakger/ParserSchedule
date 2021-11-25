@@ -1,16 +1,6 @@
-import requests
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.action_chains import ActionChains
-from bs4 import BeautifulSoup
-import time
-import pickle
-
-from Schedule import Schedule
 from Driver import DriverHelper
+from Schedule import Schedule
+from Lessons import Lessons
 
 
 def main():
@@ -19,7 +9,9 @@ def main():
     driver.auth()
 
     # Получение всего расписания
-    schedule = Schedule(driver.driver).parse()
+    # schedule = Schedule(driver=driver.driver, month=10).parse()
+
+    lessons = Lessons(driver=driver.driver, term=7).parse()
 
 
 if __name__ == '__main__':
