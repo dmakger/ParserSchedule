@@ -18,7 +18,9 @@ class Subjects:
         if month is None:
             month = self.date.today().month
         self.month = month
+
         self.url = self.get_url()
+        self.group = None
 
     def get_url(self):
         """
@@ -35,6 +37,7 @@ class Subjects:
         """
         print("Получение ссылок на предметы...")
         url_subjects = self.get_url_lessons(Url.get_html(self.driver, self.url))
+        self.group = url_subjects[0].split('group=')[1].split('&')[0]
         count_subjects = len(url_subjects)
         count = 1
         gradebook = dict()
