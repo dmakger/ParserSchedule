@@ -39,7 +39,7 @@ class Subjects:
         count = 1
         gradebook = dict()
         for title, url in url_subjects.items():
-            print(f"Парсинг {count} из {count_subjects}...")
+            print(f"Парсинг страниц предметов. {count} из {count_subjects}...")
             count += 1
             html = Url.get_html(self.driver, url)
             gradebook[title] = self.get_info_subject(html)
