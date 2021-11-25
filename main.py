@@ -18,8 +18,8 @@ def main():
     # driver.install_auth()
     driver.auth()
 
-    schedule = Schedule(driver.driver)
-    schedule.parse()
+    # Получение всего расписания
+    schedule = Schedule(driver.driver).parse()
 
 
 if __name__ == '__main__':

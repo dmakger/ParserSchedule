@@ -1,6 +1,7 @@
 import datetime
 import time
 from bs4 import BeautifulSoup
+from Url import Url
 from selenium.webdriver.common.by import By
 
 
@@ -57,23 +58,6 @@ class Schedule:
 
         return range_date
 
-    def get_url(self, url: str, params: dict = None):
-        """url:str -> отформатированный url"""
-        if (params is None) or (len(params) == 0):
-            return url
-        else:
-            params_str = ""
-            for key, value in params.items():
-                params_str += key + "=" + value + "&"
-            return url + "?" + params_str[:-1]
-
-    def get_html(self, url: str, params: dict = None):
-        """html:str -> вернет странницу html"""
-        self.driver.get(self.get_url(url, params))
-        print("Прогрузка страницы...")
-        time.sleep(2)
-        return self.driver.page_source
-
     def get_schedule(self, html):
         """
         schedule:dict -> вернет все пары в течении недели.
@@ -110,7 +94,7 @@ class Schedule:
         # for i in range(pages_count):
         for i in range(1):
             print(f"Парсинг страницы {i + 1} из {pages_count}...")
-            html = self.get_html(self.URL_SCHEDULE, params={
+            html = Url.get_html(self.driver, self.URL_SCHEDULE, params={
                 "d": range_date[i]["min"] + "+-+" + range_date[i]["max"]
             })
             data.append(self.get_schedule(html))
