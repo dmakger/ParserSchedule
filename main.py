@@ -10,7 +10,6 @@ import time
 import pickle
 
 from Schedule import Schedule
-from auth_data import kkmt_password, kkmt_login
 from Driver import DriverHelper
 
 

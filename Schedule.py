@@ -75,10 +75,16 @@ class Schedule:
         return self.driver.page_source
 
     def get_schedule(self, html):
+        """
+        schedule:dict -> вернет все пары в течении недели.
+        А именно словарь с числом дня недели пары (где 1 - понедельник) и
+        словарь с номерами пар к названию пары
+        """
         soup = BeautifulSoup(html, 'html.parser')
         table = soup.find('table', class_='schedule_day_time_table')
         num_days = len(table.find('thead').find_all('th')) - 1
-        schedule = [list() for i in range(num_days)]
+        # schedule = [dict() for i in range(num_days)]
+        schedule = dict()
 
         items = table.find('tbody').find_all('tr')
         for item in items:
@@ -86,17 +92,23 @@ class Schedule:
             for td in cols:
                 info = td.find('div', class_='time_table_item_validated')
                 if info and not td.find('div', class_='item_holiday'):
-                    index = int(td.get('data-stt-day')) - 1
-                    schedule[index].append(td.get('data-stt-time'))
+                    index = td.get('data-stt-day')
+                    lesson = info.get('data-original-title').split('(')[-1].split(' - ')[1]
+                    if schedule.get(index, -1) == -1:
+                        schedule[index] = dict()
+                    schedule[index][td.get('data-stt-time')] = lesson
         return schedule
 
     def parse(self):
+        """
+        data:list -> вернет все пары в течении месяца
+        """
         range_date = self.get_range_date()
         pages_count = len(range_date)
         data = list()
 
-        for i in range(pages_count):
-        # for i in range(1):
+        # for i in range(pages_count):
+        for i in range(1):
             print(f"Парсинг страницы {i + 1} из {pages_count}...")
             html = self.get_html(self.URL_SCHEDULE, params={
                 "d": range_date[i]["min"] + "+-+" + range_date[i]["max"]
@@ -107,4 +119,9 @@ class Schedule:
             print("----------------------------")
             for day in week:
                 print(day)
+                for key, value in week[day].items():
+                    print(f"{key}: {value}")
+            print("----------------------------")
+
+        return data
 
