@@ -8,26 +8,26 @@ from openpyxl.worksheet._write_only import WriteOnlyWorksheet
 from openpyxl.worksheet.worksheet import Worksheet
 
 from BorderCoord import BorderCoord as bc
+from FontCoord import FontCoord as fc
+from AlignmentCoord import AlignmentCoord as ac
 from openpyxl.styles import Border
 
 
 class Coord:
-    FONT_FAMILY = "Times New Roman"
-
-    FONT_SIZE_BIG = 16
-    FONT_SIZE_MIDDLE = 12
-    FONT_SIZE_REGULAR = 11
-    FONT_SIZE_MINI = 10
-
-    CENTER = 'center'
-    LEFT = 'left'
-    RIGHT = 'right'
-
     CELL_LEN_NONE = 0
     CELL_LEN_AUTO_VERTICAL = 1
     CELL_LEN_AUTO_HORIZONTAL = 2
 
-    def __init__(self, start: list, end: list = None, border=bc.get_border()):
+    CELL_WIDTH = 8.43
+    CELL_HEIGHT = 15.75
+
+    CELL_SIZE_TYPE_NONE = 0
+    CELL_SIZE_TYPE_MAX = 1
+
+    def __init__(self, start: list, end: list = None, font: fc = None, align: ac = None, border: Border = None,
+                 title: str = "", width: int = CELL_WIDTH, height: int = CELL_HEIGHT,
+                 cell_len: int = CELL_LEN_AUTO_HORIZONTAL, type_size: int = CELL_SIZE_TYPE_NONE,
+                 ws: Union[WriteOnlyWorksheet, Worksheet] = None):
         self.start = start
         self.start_row: int = start[0]
         self.start_col: int = start[1]
@@ -38,6 +38,14 @@ class Coord:
         self.end_row: int = end[0]
         self.end_col: int = end[1]
 
+        if font is None:
+            font = fc()
+        self.font = font
+
+        if align is None:
+            align = ac()
+        self.align = align
+
         if border is None:
             border = bc.get_border()
         elif type(border) == dict:
@@ -47,34 +55,31 @@ class Coord:
                                    bottom=border.get('bottom', bc.NONE))
         self.border = border
 
-        self.ws = None
-        self.title = None
-        self.font = self.FONT_FAMILY
-        self.font_size = self.FONT_SIZE_MIDDLE
-        self.font_style_bold = False
-        self.style_horizontal = self.CENTER
-        self.style_vertical = self.CENTER
-        self.cell_len = self.CELL_LEN_AUTO_HORIZONTAL
+        if ws is None:
+            ws = None
+        self.ws = ws
 
-    def draw(self, ws: Union[WriteOnlyWorksheet, Worksheet] = None, title=None, font=None, font_size=None,
-             font_style_bold: bool = None, cell_len=None, style_horizontal=None,
-             style_vertical=None, border=None):
+        self.title = title
+        self.cell_len = cell_len
+        self.width = width
+        self.height = height
+        self.type_size = type_size
+
+    def draw(self, ws: Union[WriteOnlyWorksheet, Worksheet] = None, title: str = None, font: fc = None,
+             align: ac = None, type_size: int = None, cell_len: int = None, border: Border = None):
+        """Отрисовка текста"""
         if ws is None:
             ws = self.ws
         if title is None:
             title = self.title
         if font is None:
             font = self.font
-        if font_size is None:
-            font_size = self.font_size
-        if font_style_bold is None:
-            font_style_bold = self.font_style_bold
+        if align is None:
+            align = self.align
+        if type_size is None:
+            type_size = self.type_size
         if cell_len is None:
             cell_len = self.cell_len
-        if style_horizontal is None:
-            style_horizontal = self.style_horizontal
-        if style_vertical is None:
-            style_vertical = self.style_vertical
         if border is None:
             border = self.border
         elif type(border) == dict:
@@ -88,15 +93,12 @@ class Coord:
             end_row=self.end_row, end_column=self.end_col
         )
         cell = ws.cell(row=self.start_row, column=self.start_col)
-        cell.value = title
-        cell.font = Font(name=font, size=font_size, bold=font_style_bold)
-        cell.alignment = Alignment(wrap_text=True, horizontal=style_horizontal, vertical=style_vertical)
+        self.set_title(ws=ws, title=title, cell=cell)
+        cell.font = font.get()
+        cell.alignment = align.get()
         self.set_border(ws, border)
 
-        width_column = self.get_size_column(title=title, cell_len=cell_len)
-        ws.column_dimensions[cell.column_letter].width = width_column
-        ws.row_dimensions[cell.row].height = self.get_size_row(ws=ws, title=title, width_column=width_column)
-        print(f"{title} = {width_column}x{self.get_size_row(ws=ws, title=title, width_column=width_column)} -> {cell.column_letter}:{cell.row}")
+        self.set_cell_size(ws=ws, title=title, cell=cell, cell_len=cell_len, type_size=type_size)
 
     def set_border(self, ws: Union[WriteOnlyWorksheet, Worksheet] = None, border: Border = None):
         if ws is None:
@@ -119,13 +121,14 @@ class Coord:
 
         # return max([len(word) for word in title.split(' ')]) + 10
         if cell_len == self.CELL_LEN_NONE:
-            return 8.09
+            return self.CELL_WIDTH
         elif cell_len == self.CELL_LEN_AUTO_HORIZONTAL:
-            return len(title) + 4
+            cell_len_digit = (len(title) + 2) * 1.2
+            # if self.start_row == self.end_row:
+            return cell_len_digit
+
         elif cell_len == self.CELL_LEN_AUTO_VERTICAL:
-            # print(title + ": VERTICAL")
-            # [print(len(word)) for word in title.split(' ')]
-            return max([len(word) for word in title.split(' ')]) + 10
+            return (max([len(word) for word in title.split(' ')]) + 2) * 1.2
         else:
             return cell_len
 
@@ -136,9 +139,55 @@ class Coord:
             ws: Union[WriteOnlyWorksheet, Worksheet] = self.ws
 
         current_row = ws.row_dimensions[self.start_row].height
+        height = int(round(len(title) / width_column) * 15.50) + 10
         if current_row is None:
             current_row = 15.50
-        height = int(round(len(title) / width_column) * 15.50) + 10
         if current_row + 10 > height:
             return current_row
         return height
+
+    def set_cell_size(self, cell, cell_len, ws=None, title=None, width_column: int = None,
+                      type_size: int = CELL_SIZE_TYPE_NONE):
+        if title is None:
+            title = self.title
+        if ws is None:
+            ws: Union[WriteOnlyWorksheet, Worksheet] = self.ws
+        if width_column is None:
+            width_column = self.get_size_column(title, cell_len)
+
+        height = self.get_size_row(ws=ws, title=title, width_column=width_column)
+
+        if ws.column_dimensions[cell.column_letter].width is None:
+            ws.column_dimensions[cell.column_letter].width = self.CELL_WIDTH
+        if ws.row_dimensions[cell.row].height is None:
+            ws.row_dimensions[cell.row].height = self.CELL_HEIGHT
+
+        if type_size == self.CELL_SIZE_TYPE_MAX:
+            if ws.column_dimensions[cell.column_letter].width < width_column:
+                ws.column_dimensions[cell.column_letter].width = width_column
+            else:
+                width_column = ws.column_dimensions[cell.column_letter].width
+            self.width = width_column
+
+            if ws.row_dimensions[cell.row].height > height:
+                ws.row_dimensions[cell.row].height = height
+            else:
+                height = ws.row_dimensions[cell.row].height
+            self.height = height
+
+        elif type_size == self.CELL_SIZE_TYPE_NONE:
+            ws.column_dimensions[cell.column_letter].width = width_column
+            ws.row_dimensions[cell.row].height = height
+
+    def set_title(self, cell, ws: Union[WriteOnlyWorksheet, Worksheet] = None, title: str = None):
+        if ws is None:
+            ws = self.ws
+        if title is None:
+            title = self.title
+
+        if title[0] == '=':
+            cell_pos = f"{cell.column_letter}{cell.row}"
+            ws.write_formula(cell_pos, title)
+        else:
+            cell.value = title
+

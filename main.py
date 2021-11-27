@@ -8,8 +8,8 @@ import data
 
 def main():
     # driver = DriverHelper()
-    # # driver.install_auth()
-    # driver.auth()
+    # driver.install_auth()
+    # # driver.auth()
 
     month = 10
     # Получение всего расписания
@@ -19,7 +19,7 @@ def main():
     # Получение журнала успеваемости по всем предметам
     # subjects = Subjects(driver=driver.driver, term=7, month=month).parse()
     # print(data.subjects)
-
+    #
     # user = User(driver.driver)
     # speciality = user.get_corporate_data(user.TEXT_SPECIALITY)
     # print(speciality)

@@ -4,6 +4,7 @@ from openpyxl.styles import Side
 
 
 class BorderCoord:
+    """Работа с границами ячеек"""
     NONE = None
     THIN = 'thin'
     MEDIUM = 'medium'
