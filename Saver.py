@@ -10,10 +10,11 @@ from MainSheet import MainSheet
 class Saver:
     FILE_NAME = "test.xlsx"
     
-    def __init__(self, schedule, subjects, group, month=None):
+    def __init__(self, schedule, subjects, group, speciality, month=None):
         self.schedule = schedule
         self.subjects = subjects
         self.group = group
+        self.speciality = speciality
         self.month = month
         self.save()
 

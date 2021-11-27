@@ -4,13 +4,36 @@ from openpyxl.styles import Side
 
 
 class BorderCoord:
-    THIN = Border(left=Side(style='thin'),
-                  right=Side(style='thin'),
-                  top=Side(style='thin'),
-                  bottom=Side(style='thin'))
-    MEDIUM = Border(left=Side(style='medium'),
-                    right=Side(style='medium'),
-                    top=Side(style='medium'),
-                    bottom=Side(style='medium'))
+    NONE = None
+    THIN = 'thin'
+    MEDIUM = 'medium'
 
-    # def c
+    @staticmethod
+    def get_border(left=NONE,
+                   right=NONE,
+                   top=NONE,
+                   bottom=NONE):
+        return Border(left=Side(style=left),
+                      right=Side(style=right),
+                      top=Side(style=top),
+                      bottom=Side(style=bottom))
+
+    @staticmethod
+    def get_border_thin(left=THIN,
+                        right=THIN,
+                        top=THIN,
+                        bottom=THIN):
+        return Border(left=Side(style=left),
+                      right=Side(style=right),
+                      top=Side(style=top),
+                      bottom=Side(style=bottom))
+
+    @staticmethod
+    def get_border_medium(left=MEDIUM,
+                          right=MEDIUM,
+                          top=MEDIUM,
+                          bottom=MEDIUM):
+        return Border(left=Side(style=left),
+                      right=Side(style=right),
+                      top=Side(style=top),
+                      bottom=Side(style=bottom))

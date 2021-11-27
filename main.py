@@ -31,7 +31,7 @@ def main():
     group = "П1-18"
     speciality = "Программирование в компьютерных системах"
 
-    saver = Saver(schedule=schedule, subjects=subjects, group=group, month=month)
+    saver = Saver(schedule=schedule, subjects=subjects, group=group, speciality=speciality, month=month)
 
 
 if __name__ == '__main__':
