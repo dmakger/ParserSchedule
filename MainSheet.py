@@ -13,57 +13,85 @@ from Coord import Coord
 class MainSheet:
 
     def __init__(self, wb: Workbook, subjects: dict):
-        self.subjects = subjects
         self.wb = wb
+        self.subjects = subjects
         self.create_sheet()
+        self.last_col = 1
 
     def create_sheet(self):
         ws = self.wb.create_sheet("Ведомость усп.и посещ.")
 
-        self.create_title(ws)
+        self.create_students(ws)
+        self.create_subjects(ws)
+        # self.create_statistic(ws)
 
-    def create_title(self, ws: Union[WriteOnlyWorksheet, Worksheet]):
-        nums_row_vertical = [3, 4]
-
+    def create_students(self, ws: Union[WriteOnlyWorksheet, Worksheet]):
+        # Title
         title_left = {
-            "№ п/п": Coord([nums_row_vertical[0], 1], [nums_row_vertical[1], 1],
-                           border=bc.get_border_thin(top=bc.MEDIUM, left=bc.MEDIUM)),
-            "ФИО": Coord([nums_row_vertical[0], 2], [nums_row_vertical[1], 2],
-                         border=bc.get_border_thin(top=bc.MEDIUM))
+            "№ п/п": Coord([3, 1], [4, 1], border=bc.get_border_thin(top=bc.MEDIUM, left=bc.MEDIUM)),
+            "ФИО": Coord([3, 2], [4, 2], border=bc.get_border_thin(top=bc.MEDIUM))
         }
         self.draw_all(ws, title_left, font_style_bold=True)
+        self.last_col = 2
 
+        # Main
+        students = list(list(self.subjects.values())[0].keys())
+        current_row = 5
+        for i in range(len(students) - 1):
+            Coord([current_row, 1], border=bc.get_border_thin(left=bc.MEDIUM)).draw(ws=ws, title=str(i + 1))
+            Coord([current_row, 2], border=bc.get_border_thin()).draw(ws=ws, title=students[i],
+                                                                      style_horizontal=Coord.LEFT,
+                                                                      )
+            current_row += 1
+        Coord([current_row, 1], border=bc.get_border_thin(left=bc.MEDIUM, bottom=bc.MEDIUM)).draw(ws=ws,
+                                                                                                  title=str(i + 1))
+        Coord([current_row, 2], border=bc.get_border_thin(bottom=bc.MEDIUM)).draw(ws=ws, title=students[i],
+                                                                                  style_horizontal=Coord.LEFT)
+
+    def create_subjects(self, ws: Union[WriteOnlyWorksheet, Worksheet]):
+        # title_bottom_middle = dict()
+
+        print(self.last_col)
         title_bottom_middle = dict()
-        last_col = 2
+        # last_col = 2
+        # for title_subject in self.subjects:
+        #     last_col += 1
+        #     title_bottom_middle[title_subject] = Coord([4, last_col], border=bc.get_border_thin())
+        # self.draw_all(ws=ws, d=title_bottom_middle, font_size=Coord.FONT_SIZE_MINI, font_style_bold=True)
+        #
+        # Coord([3, 3], [3, last_col], border=bc.get_border_thin(top=bc.MEDIUM)).draw(ws=ws, title="Дисциплина",
+        #                                                                                  font_style_bold=True,
+        #                                                                                  cell_len=Coord.CELL_LEN_NONE)
         for title_subject in self.subjects:
-            last_col += 1
-            title_bottom_middle[title_subject] = Coord([nums_row_vertical[1], last_col], border=bc.get_border_thin())
-        self.draw_all(ws, title_bottom_middle, font_size=Coord.FONT_SIZE_MINI, font_style_bold=True)
+            self.last_col += 1
+            Coord([4, self.last_col], border=bc.get_border_thin()).draw(ws=ws, title=title_subject,
+                                                                        font_size=Coord.FONT_SIZE_MINI,
+                                                                        font_style_bold=True,
+                                                                        cell_len=Coord.CELL_LEN_AUTO_VERTICAL)
 
-        title_top_middle = {"Дисциплина": Coord([nums_row_vertical[0], 3], [nums_row_vertical[0], last_col],
-                                                border=bc.get_border_thin(top=bc.MEDIUM))}
-        self.draw_all(ws, title_top_middle, font_style_bold=True)
+        Coord([3, 3], [3, self.last_col], border=bc.get_border_thin(top=bc.MEDIUM)).draw(ws=ws, title="Дисциплина",
+                                                                                         font_style_bold=True,
+                                                                                         cell_len=Coord.CELL_LEN_NONE)
 
-        last_col += 1
-        title_right = {"Сред. балл": Coord([nums_row_vertical[0], last_col], [nums_row_vertical[1], last_col],
+    def create_statistic(self, ws: Union[WriteOnlyWorksheet, Worksheet]):
+        self.last_col += 1
+        title_right = {"Сред. балл": Coord([3, self.last_col], [4, self.last_col],
                                            border=bc.get_border_medium(bottom=bc.THIN))}
         self.draw_all(ws, title_right, font_style_bold=True)
 
-        last_col += 1
+        self.last_col += 1
         right_title_top = {
-            "Пропущено часов": Coord([nums_row_vertical[0], last_col], [nums_row_vertical[0], last_col + 2],
+            "Пропущено часов": Coord([3, self.last_col], [3, self.last_col + 2],
                                      border=bc.get_border_medium(bottom=bc.THIN))}
         self.draw_all(ws, right_title_top, font_style_bold=True)
 
         right_title_bottom = {
-            "Всего": Coord([nums_row_vertical[1], last_col], border=bc.get_border_thin(left=bc.MEDIUM)),
-            "По уваж.прич.": Coord([nums_row_vertical[1], last_col + 1], border=bc.get_border_thin()),
-            "По не уваж.прич.": Coord([nums_row_vertical[1], last_col + 2], border=bc.get_border_thin(right=bc.MEDIUM)),
+            "Всего": Coord([4, self.last_col], border=bc.get_border_thin(left=bc.MEDIUM)),
+            "По уваж.прич.": Coord([4, self.last_col + 1], border=bc.get_border_thin()),
+            "По не уваж.прич.": Coord([4, self.last_col + 2], border=bc.get_border_thin(right=bc.MEDIUM)),
         }
         self.draw_all(ws, right_title_bottom)
-        last_col += 2
-
-        self.wb.close()
+        self.last_col += 2
 
     def draw_all(self, ws, d: dict, font=None, font_size=None, font_style_bold: bool = None):
         for title, coord in d.items():
