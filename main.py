@@ -12,11 +12,11 @@ def main():
     # # driver.auth()
 
     month = 10
-    # Получение всего расписания
+    # # Получение всего расписания
     # schedule = Schedule(driver=driver.driver, month=month).parse()
     # print(schedule)
-
-    # Получение журнала успеваемости по всем предметам
+    #
+    # # Получение журнала успеваемости по всем предметам
     # subjects = Subjects(driver=driver.driver, term=7, month=month).parse()
     # print(data.subjects)
     #

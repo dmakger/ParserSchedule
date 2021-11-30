@@ -22,7 +22,7 @@ class Saver:
         wb = Workbook()
         self.delete_sheets(wb)
 
-        main_sheet = MainSheet(wb, self.subjects)
+        MainSheet(wb=wb, subjects=self.subjects, speciality=self.speciality, group=self.group, month=self.month)
 
         wb.save(self.FILE_NAME)
         os.startfile(self.FILE_NAME)
