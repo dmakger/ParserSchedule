@@ -26,6 +26,10 @@ class Coord:
     def get_column_letter(column: int):
         return get_column_letter(column)
 
+    @staticmethod
+    def get_title(ws, row, column):
+        return ws.cell(row=row, column=column).value
+
     def __init__(self, start: list, end: list = None, font: fc = None, align: ac = None,
                  border: Border = None, width: float = CELL_WIDTH, height: float = CELL_HEIGHT, title=None,
                  cell_len: int = CELL_LEN_AUTO_HORIZONTAL, type_size: int = CELL_SIZE_TYPE_NONE,

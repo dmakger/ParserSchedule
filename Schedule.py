@@ -1,12 +1,21 @@
 import datetime
-import time
 from bs4 import BeautifulSoup
 from Url import Url
-from selenium.webdriver.common.by import By
 
 
 class Schedule:
     URL_SCHEDULE = "https://ies.unitech-mo.ru/schedule"
+
+    @staticmethod
+    def get_all_days(month: int, year: int):
+        start_day = datetime.date(month=month, year=year, day=1)
+        days = list()
+        day = start_day
+        while day.month == start_day.month:
+            days.append(day.strftime('%d.%m.%Y'))
+            day += datetime.timedelta(days=1)
+        return days
+
 
     def __init__(self, driver, month: int = None, year: int = None):
         """

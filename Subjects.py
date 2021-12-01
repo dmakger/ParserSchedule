@@ -1,4 +1,4 @@
-import time
+import datetime
 from bs4 import BeautifulSoup
 from Url import Url
 
@@ -7,7 +7,7 @@ class Subjects:
     URL_LESSONS = "https://ies.unitech-mo.ru/studentplan"
     URL_MAIN_PAGE = "https://ies.unitech-mo.ru"
 
-    def __init__(self, driver, term: int = -1, month: int = None):
+    def __init__(self, driver, term: int = -1, month: int = None, year: int = None):
         """
         driver - нужен для перемещения по ссылкам
         term - нужный семестр
@@ -15,10 +15,17 @@ class Subjects:
         """
         self.driver = driver
         self.term = term
+        self.date = datetime.date
         if month is None:
             month = self.date.today().month
         self.month = month
+
+        if year is None:
+            year = self.date.today().year
+        self.year = year
         self.url = self.get_url()
+
+        self.all_days = None
 
     def get_url(self):
         """
@@ -38,12 +45,14 @@ class Subjects:
         count_subjects = len(url_subjects)
         count = 1
         gradebook = dict()
+        self.all_days = list()
         for title, url in url_subjects.items():
             print(f"Парсинг страниц предметов. {count} из {count_subjects}...")
             count += 1
             html = Url.get_html(self.driver, url)
             gradebook[title] = self.get_info_subject(html)
         print("Парсинг предметов завершен успешно!")
+        self.all_days.sort()
         return gradebook
 
     def get_url_lessons(self, html):
@@ -93,4 +102,6 @@ class Subjects:
                 date_text = date.get_text(strip=True)
                 if (date_text[0].isdigit()) and (int(date_text.split('.')[1]) == self.month):
                     dates[i] = date_text
+                    if date_text not in self.all_days:
+                        self.all_days.append(date_text)
         return dates

@@ -1,8 +1,6 @@
 from typing import Union
 
 from openpyxl import Workbook
-from openpyxl.styles import Font
-from openpyxl.styles import Alignment
 from openpyxl.worksheet._write_only import WriteOnlyWorksheet
 from openpyxl.worksheet.worksheet import Worksheet
 
@@ -14,7 +12,9 @@ from Coord import Coord
 
 class MainSheet:
 
-    def __init__(self, wb: Workbook, subjects: dict, speciality: str, group: str, month: str):
+    NAME_SHEET = "Ведомость усп.и посещ."
+
+    def __init__(self, wb: Workbook, subjects: dict, speciality: str, group: str, month: int):
         self.wb = wb
         self.ws: Union[WriteOnlyWorksheet, Worksheet] = None
         self.subjects = subjects
@@ -29,7 +29,7 @@ class MainSheet:
 
         self.create_sheet()
 
-    def get_month(self, num):
+    def get_month(self, num: int):
         if num < 1 or num > 12:
             return None
         months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
@@ -37,7 +37,7 @@ class MainSheet:
         return months[num-1]
 
     def create_sheet(self):
-        ws = self.wb.create_sheet("Ведомость усп.и посещ.")
+        ws = self.wb.create_sheet(self.NAME_SHEET)
         self.ws = ws
 
         self.create_students()

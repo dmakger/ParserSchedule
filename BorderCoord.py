@@ -8,6 +8,7 @@ class BorderCoord:
     NONE = None
     THIN = 'thin'
     MEDIUM = 'medium'
+    BOLD = 'thick'
 
     @staticmethod
     def get_border(left=NONE,
@@ -34,6 +35,16 @@ class BorderCoord:
                           right=MEDIUM,
                           top=MEDIUM,
                           bottom=MEDIUM):
+        return Border(left=Side(style=left),
+                      right=Side(style=right),
+                      top=Side(style=top),
+                      bottom=Side(style=bottom))
+
+    @staticmethod
+    def get_border_bold(left=BOLD,
+                        right=BOLD,
+                        top=BOLD,
+                        bottom=BOLD):
         return Border(left=Side(style=left),
                       right=Side(style=right),
                       top=Side(style=top),
