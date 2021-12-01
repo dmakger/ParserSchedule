@@ -23,6 +23,7 @@ class SkipSheet:
 
         self.ws = None
         self.col_end = None
+        self.data_schedule = None
 
         self.create_sheet()
 
@@ -73,6 +74,7 @@ class SkipSheet:
         col = start_col
 
         count_days = 0
+        self.data_schedule = dict()
         for week in self.schedule:
             for day_week in range(1, 8):
                 day = week.get(day_week, -1)
@@ -90,15 +92,19 @@ class SkipSheet:
                             border_number_lesson = bc.get_border_thin(right=bc.MEDIUM)
                         # Название пары
                         Coord([row, col], ws=self.ws, title=update_day[lesson], border=border_subjects) \
-                            .draw(font=fc(bold=True, size=fc.FONT_SIZE_MINI))
+                            .draw(font=fc(bold=True, size=fc.FONT_SIZE_MINI), cell_len=Coord.CELL_LEN_AUTO_VERTICAL)
                         # Номер пары
                         Coord([row + 2, col], ws=self.ws, title=self.get_char_lesson(lesson), font=fc(bold=True)) \
                             .draw(cell_len=8, border=border_number_lesson)
                         col += 1
                     # Дата
                     Coord([row + 1, col - len(lessons)], [row + 1, col - 1], ws=self.ws, font=fc(bold=True), cell_len=8,
-                          border=bc.get_border(left=bc.MEDIUM, right=bc.MEDIUM), title=self.all_days[count_days]).draw()
+                          border=bc.get_border(right=bc.MEDIUM), title=self.all_days[count_days]).draw()
+                    self.data_schedule[self.all_days[count_days]] = col - 1
                     count_days += 1
+
+        Coord([start_row, col], [start_row + 2, col], title="ПРОПУЩЕНО", ws=self.ws, font=fc(bold=True, size=fc.FONT_SIZE_MINI),
+              border=bc.get_border_bold(left=bc.MEDIUM, bottom=bc.THIN)).draw()
         self.col_end = col - 1
 
     def get_lessons(self, day: dict):
@@ -146,22 +152,40 @@ class SkipSheet:
         col_student = start_col - 1
 
         name_students: list = sorted(list(list(self.subjects.values())[0].keys()))
-        for i in range(start_row, len(name_students) + start_row):
+        last_row = len(name_students) + start_row
+        for i in range(start_row, last_row):
             for j in range(start_col, self.col_end + 1):
                 Coord([i, j], ws=self.ws, border=bc.get_border_thin()).draw()
 
-        for title_lesson, students in self.subjects.items():
-            for name, student_subjects in students.items():
+        last_date = None
+        result_dict = dict()
+        for title_lesson in self.subjects:
+            for name, student_subjects in self.subjects[title_lesson].items():
                 row_student = name_students.index(name) + start_row
                 # print(Coord.get_title(ws=self.ws, row=row_student, column=col_student))
                 for date, result in student_subjects.items():
-                    current_date = Coord.get_title(ws=self.ws, row=row_date, column=col)
                     for col_day in range(col, self.col_end + 1):
-                        intermediate_date = Coord.get_title(ws=self.ws, row=row_date, column=col_day)
-                        if intermediate_date is None:
-                            intermediate_date = current_date
-                        if date == intermediate_date and \
+                        current_date = Coord.get_title(ws=self.ws, row=row_date, column=col_day)
+                        if current_date is None:
+                            current_date = last_date
+                        else:
+                            last_date = current_date
+                        if self.data_schedule[current_date] == col_day:
+                            Coord([row_student, col_day], ws=self.ws, border=bc.get_border_thin(right=bc.MEDIUM)) \
+                                .draw(type_size=Coord.CELL_SIZE_TYPE_MAX)
+                        if date == current_date and \
                                 title_lesson == Coord.get_title(ws=self.ws, row=row_lesson, column=col_day) and \
                                 result == "Н":
-                            Coord([row_student, col_day], ws=self.ws, title=result, border=bc.get_border_thin())\
+                            result_dict[name] = result_dict.get(name, 0) + 1
+                            Coord([row_student, col_day], ws=self.ws, title=result, border=bc.get_border_thin()) \
                                 .draw(type_size=Coord.CELL_SIZE_TYPE_MAX)
+        self.col_end += 1
+        letter_start = Coord.get_column_letter(start_col)
+        letter_end = Coord.get_column_letter(self.col_end - 1)
+        for row in range(start_row, last_row):
+            title = f'=(COUNTIF({letter_start}{row}:{letter_end}{row},"н"))*2'
+            Coord([row, self.col_end], ws=self.ws, border=bc.get_border_thin(left=bc.MEDIUM), height=15.8) \
+                .draw(title=title, cell_len=13)
+        for col in range(start_col, self.col_end + 1):
+            Coord([last_row, col], ws=self.ws, border=bc.get_border(top=bc.BOLD)) \
+                .draw(type_size=Coord.CELL_SIZE_TYPE_MAX)
