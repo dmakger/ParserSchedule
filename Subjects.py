@@ -4,71 +4,43 @@ from Url import Url
 
 
 class Subjects:
-    URL_LESSONS = "https://ies.unitech-mo.ru/studentplan"
-    URL_MAIN_PAGE = "https://ies.unitech-mo.ru"
 
-    def __init__(self, driver, term: int = -1, month: int = None, year: int = None):
+    def __init__(self, driver, urls: dict, term: int = -1, month: int = None, year: int = None):
         """
         driver - нужен для перемещения по ссылкам
         term - нужный семестр
         month - месяц по которому нужна успеваемость
         """
         self.driver = driver
+        self.urls = urls
         self.term = term
-        self.date = datetime.date
         if month is None:
-            month = self.date.today().month
+            month = datetime.date.today().month
         self.month = month
 
         if year is None:
-            year = self.date.today().year
+            year = datetime.date.today().year
         self.year = year
-        self.url = self.get_url()
 
         self.all_days = None
-
-    def get_url(self):
-        """
-        url:str -> вернет url созданный относительно семестра
-        """
-        params_url = {}
-        if self.term != -1:
-            params_url["sem"] = self.term
-        return Url.get_url(self.URL_LESSONS, params_url)
 
     def parse(self):
         """
         gradebook:dict -> вернет предметы к студенту к его успеваемости.
         """
         print("Получение ссылок на предметы...")
-        url_subjects = self.get_url_lessons(Url.get_html(self.driver, self.url))
-        count_subjects = len(url_subjects)
+        count_subjects = len(self.urls)
         count = 1
         gradebook = dict()
         self.all_days = list()
-        for title, url in url_subjects.items():
-            print(f"Парсинг страниц предметов. {count} из {count_subjects}...")
+        for title, url in self.urls.items():
+            print(f"Парсинг страниц с учебными предметами: {count} из {count_subjects}...")
             count += 1
             html = Url.get_html(self.driver, url)
             gradebook[title] = self.get_info_subject(html)
-        print("Парсинг предметов завершен успешно!")
+        print("Парсинг учебных предметов завершен!")
         self.all_days.sort()
         return gradebook
-
-    def get_url_lessons(self, html):
-        """
-        url_lessons:dict -> вернет предметы к студенту к его успеваемости.
-        """
-        soup = BeautifulSoup(html, 'html.parser')
-        rows = soup.find('table', class_="student_plan_table").find_all('tr')
-        url_lessons = dict()
-
-        for row in rows[1:]:
-            cols = row.find_all('td')
-            lesson = str(cols[1])[4:-5]
-            url = cols[-1].find('a').get('href')
-            url_lessons[lesson] = self.URL_MAIN_PAGE + url
-        return url_lessons
 
     def get_info_subject(self, html):
         """

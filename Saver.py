@@ -28,25 +28,43 @@ class Saver:
             year = datetime.date.today().year
         self.year = year
 
-        self.save()
-
     def save(self):
         wb = Workbook()
         self.delete_sheets(wb)
 
-        print(f"Создание листа: {MainSheet.NAME_SHEET}...")
-        MainSheet(wb=wb, subjects=self.subjects, speciality=self.speciality, group=self.group, month=self.month)
-        name_two_sheet = f"{self.group} (ЭН)"
-        print(f"Создание листа: {name_two_sheet}...")
-        # SkipSheet(wb=wb, subjects=self.subjects, schedule=self.schedule, name_sheet=name_two_sheet,
-        #           month=self.month, year=self.year, all_days=self.all_days)
-        name_three_sheet = f"{self.group} (БН)"
-        print(f"Создание листа: {name_three_sheet}...")
-        SubjectsSheet(wb=wb, subjects=self.subjects, schedule=self.schedule, name_sheet=name_three_sheet,
-                      month=self.month, year=self.year, all_days=self.all_days)
+        name_skip_sheet = f"{self.group} (ЭН)"
+        print(f'Создание листа: "{name_skip_sheet}"')
+        skip_sheet = SkipSheet(wb=wb, subjects=self.subjects, schedule=self.schedule, name_sheet=name_skip_sheet,
+                               month=self.month, year=self.year, all_days=self.all_days)
+        print()
+        name_subjects_sheet = f"{self.group} (БН)"
+        print(f'Создание листа: "{name_subjects_sheet}"')
+        subjects_sheet = SubjectsSheet(wb=wb, subjects=self.subjects, schedule=self.schedule,
+                                       name_sheet=name_subjects_sheet,
+                                       month=self.month, year=self.year, all_days=self.all_days)
+        print()
+        print(f'Создание листа: "{MainSheet.NAME_SHEET}"')
+        MainSheet(wb=wb, subjects=self.subjects, speciality=self.speciality, group=self.group, month=self.month, data={
+            'skip': {
+                'name_sheet': name_skip_sheet,
+                'last_row': skip_sheet.last_row,
+                'col_end': skip_sheet.col_end,
+                'result_start_row': skip_sheet.result_start_row
+            },
+            'subjects': {
+                'name_sheet': name_subjects_sheet,
+                'last_row': subjects_sheet.last_row,
+                'col_end': subjects_sheet.col_end,
+                'result_start_row': subjects_sheet.result_start_row,
+                'result_start_col': subjects_sheet.result_start_col
+            }
+        })
+        print()
 
-        wb.active = 1
+        wb.active = 2
+        print("Сохранение файла...")
         wb.save(self.FILE_NAME)
+        print("Открываем файл")
         os.startfile(self.FILE_NAME)
 
     def delete_sheets(self, wb):

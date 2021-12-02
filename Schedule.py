@@ -23,17 +23,19 @@ class Schedule:
         year - год по которому нужна успеваемость
         """
         self.driver = driver
-        self.date = datetime.date
         if month is None:
-            month = self.date.today().month
+            month = datetime.date.today().month
         self.month = month
 
         if year is None:
-            year = self.date.today().year
+            year = datetime.date.today().year
         self.year = year
 
-        self.start_day = self.date(self.year, self.month, 1)
+        self.start_day = datetime.date(self.year, self.month, 1)
         self.end_day = self.get_end_day()
+
+        # Все уроки
+        self.all_lesson = None
 
     def get_end_day(self):
         """day -> номер последнего дня месяца"""
@@ -81,6 +83,9 @@ class Schedule:
         table = soup.find('table', class_='schedule_day_time_table')
         schedule = dict()
 
+        if self.all_lesson is None:
+            self.all_lesson = list()
+
         items = table.find('tbody').find_all('tr')
         for item in items:
             cols = item.find_all('td')
@@ -93,6 +98,8 @@ class Schedule:
                         if schedule.get(index, -1) == -1:
                             schedule[index] = dict()
                         schedule[index][int(td.get('data-stt-time'))] = lesson
+                        self.all_lesson.append(lesson)
+        self.all_lesson = list(set(self.all_lesson))
         return schedule
 
     def parse(self):
