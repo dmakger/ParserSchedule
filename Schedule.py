@@ -16,7 +16,6 @@ class Schedule:
             day += datetime.timedelta(days=1)
         return days
 
-
     def __init__(self, driver, month: int = None, year: int = None):
         """
         driver - нужен для перемещения по ссылкам

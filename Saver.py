@@ -7,11 +7,12 @@ import os
 
 from MainSheet import MainSheet
 from SkipSheet import SkipSheet
+from SubjectsSheet import SubjectsSheet
 
 
 class Saver:
     FILE_NAME = "test.xlsx"
-    
+
     def __init__(self, schedule, subjects, group, speciality, all_days, month=None, year=None):
         self.schedule = schedule
         self.subjects = subjects
@@ -37,8 +38,12 @@ class Saver:
         MainSheet(wb=wb, subjects=self.subjects, speciality=self.speciality, group=self.group, month=self.month)
         name_two_sheet = f"{self.group} (ЭН)"
         print(f"Создание листа: {name_two_sheet}...")
-        SkipSheet(wb=wb, subjects=self.subjects, schedule=self.schedule, name_sheet=name_two_sheet,
-                  month=self.month, year=self.year, all_days=self.all_days)
+        # SkipSheet(wb=wb, subjects=self.subjects, schedule=self.schedule, name_sheet=name_two_sheet,
+        #           month=self.month, year=self.year, all_days=self.all_days)
+        name_three_sheet = f"{self.group} (БН)"
+        print(f"Создание листа: {name_three_sheet}...")
+        SubjectsSheet(wb=wb, subjects=self.subjects, schedule=self.schedule, name_sheet=name_three_sheet,
+                      month=self.month, year=self.year, all_days=self.all_days)
 
         wb.active = 1
         wb.save(self.FILE_NAME)
@@ -48,7 +53,3 @@ class Saver:
         for sheet_name in wb.sheetnames:
             sheet = wb.get_sheet_by_name(sheet_name)
             wb.remove_sheet(sheet)
-
-
-
-
