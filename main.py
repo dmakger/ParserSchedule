@@ -1,10 +1,9 @@
-from Driver import DriverHelper
-from Schedule import Schedule
-from SubjectUrls import SubjectUrls
-from Subjects import Subjects
-from User import User
-from Saver import Saver
-import data
+from parsing.Driver import DriverHelper
+from parsing.Schedule import Schedule
+from parsing.SubjectUrls import SubjectUrls
+from parsing.Subjects import Subjects
+from parsing.User import User
+from excel.Saver import Saver
 
 
 def main():
@@ -19,7 +18,7 @@ def main():
     schedule = Schedule(driver=driver.driver, month=month, year=year)
     schedule_result = schedule.parse()
     all_lesson = schedule.all_lesson
-    print(all_lesson)
+    print(schedule_result)
     print()
 
     subject_urls = SubjectUrls(driver=driver.driver, term=term, month=month, year=year).parse(lessons=all_lesson)
@@ -36,10 +35,7 @@ def main():
     # Получения данных о группе
     user = User(driver.driver)
     speciality = user.get_corporate_data(user.TEXT_SPECIALITY)
-    print(speciality)
     group = user.get_corporate_data(user.TEXT_GROUP)
-    print(group)
-    print()
     driver.close()
 
     # schedule = data.schedule
