@@ -47,14 +47,6 @@ def main():
     # group = "П1-18"
     # speciality = "Программирование в компьютерных системах"
 
-    # for week in schedule:
-    #     print("----------------------------")
-    #     for day in week:
-    #         print(day)
-    #         for key, value in week[day].items():
-    #             print(f"{key}: {value}")
-    #     print("----------------------------")
-    # print("Парсинг расписания завершен успешно!")
     # print(schedule)
     # print("\n\n")
     # print(subjects)
