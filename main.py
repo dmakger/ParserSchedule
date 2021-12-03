@@ -11,8 +11,11 @@ def main():
     driver.install_auth()
     # driver.auth()
 
+    # Месяц
     month = 10
+    # Год
     year = 2021
+    # Семестр
     term = 7
     # Получение всего расписания
     schedule = Schedule(driver=driver.driver, month=month, year=year)
