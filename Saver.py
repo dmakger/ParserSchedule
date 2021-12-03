@@ -11,7 +11,7 @@ from SubjectsSheet import SubjectsSheet
 
 
 class Saver:
-    FILE_NAME = "test.xlsx"
+    # FILE_NAME = "test.xlsx"
 
     def __init__(self, schedule, subjects, group, speciality, all_days, month=None, year=None):
         self.schedule = schedule
@@ -27,6 +27,14 @@ class Saver:
         if year is None:
             year = datetime.date.today().year
         self.year = year
+
+        self.file_name = self.get_file_name()
+
+    def get_file_name(self):
+        month = str(self.month)
+        if len(month) == 1:
+            month = f'0{month}'
+        return f'Отчёт {self.group} {month}.{self.year}.xlsx'
 
     def save(self):
         wb = Workbook()
@@ -63,9 +71,9 @@ class Saver:
 
         wb.active = 2
         print("Сохранение файла...")
-        wb.save(self.FILE_NAME)
+        wb.save(self.file_name)
         print("Открываем файл")
-        os.startfile(self.FILE_NAME)
+        os.startfile(self.file_name)
 
     def delete_sheets(self, wb):
         for sheet_name in wb.sheetnames:

@@ -73,6 +73,7 @@ class Subjects:
             if date:
                 date_text = date.get_text(strip=True)
                 if (date_text[0].isdigit()) and (int(date_text.split('.')[1]) == self.month):
+                    date_text = f'{date_text}.{self.year}'
                     dates[i] = date_text
                     if date_text not in self.all_days:
                         self.all_days.append(date_text)

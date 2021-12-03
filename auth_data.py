@@ -1,2 +1,2 @@
-kkmt_login = "gerasimovda"
-kkmt_password = "5661299213"
+kkmt_login = ""  # Ваш логин от портала ккмт
+kkmt_password = ""  # Ваш пароль от портала ккмт

@@ -144,23 +144,23 @@ class SubjectsSheet:
 
         last_date = None
         result_dict = dict()
-        # for title_lesson in self.subjects:
-        #     print(f'Формирование записи с предметом "{title_lesson}"')
-        #     for name, student_subjects in self.subjects[title_lesson].items():
-        #         row_student = name_students.index(name) + start_row
-        #         for date, result in student_subjects.items():
-        #             for col_day in range(col, self.col_end + 1):
-        #                 current_date = Coord.get_title(ws=self.ws, row=row_date, column=col_day)
-        #                 if current_date is None:
-        #                     current_date = last_date
-        #                 else:
-        #                     last_date = current_date
-        #                 if self.data_schedule[current_date] == col_day:
-        #                     Coord([row_student, col_day], ws=self.ws, border=bc.get_border_thin(right=bc.MEDIUM)) \
-        #                         .draw(type_size=Coord.CELL_SIZE_TYPE_MAX)
-        #                 if date == current_date and \
-        #                         title_lesson == Coord.get_title(ws=self.ws, row=row_lesson, column=col_day) and \
-        #                         result != "Н":
-        #                     result_dict[name] = result_dict.get(name, 0) + 1
-        #                     Coord([row_student, col_day], ws=self.ws, title=result, border=bc.get_border_thin()) \
-        #                         .draw(type_size=Coord.CELL_SIZE_TYPE_MAX)
+        for title_lesson in self.subjects:
+            print(f'Формирование записи с предметом "{title_lesson}"')
+            for name, student_subjects in self.subjects[title_lesson].items():
+                row_student = name_students.index(name) + start_row
+                for date, result in student_subjects.items():
+                    for col_day in range(col, self.col_end + 1):
+                        current_date = Coord.get_title(ws=self.ws, row=row_date, column=col_day)
+                        if current_date is None:
+                            current_date = last_date
+                        else:
+                            last_date = current_date
+                        if self.data_schedule[current_date] == col_day:
+                            Coord([row_student, col_day], ws=self.ws, border=bc.get_border_thin(right=bc.MEDIUM)) \
+                                .draw(type_size=Coord.CELL_SIZE_TYPE_MAX)
+                        if date == current_date and \
+                                title_lesson == Coord.get_title(ws=self.ws, row=row_lesson, column=col_day) and \
+                                result != "Н":
+                            result_dict[name] = result_dict.get(name, 0) + 1
+                            Coord([row_student, col_day], ws=self.ws, title=int(result), border=bc.get_border_thin())\
+                                .draw(type_size=Coord.CELL_SIZE_TYPE_MAX)

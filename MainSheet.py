@@ -81,21 +81,19 @@ class MainSheet:
         letter_start = Coord.get_column_letter(data_subjects['result_start_col'])
         letter_end = Coord.get_column_letter(data_subjects['col_end'])
         range_subjects = f"{letter_start}{data_subjects['last_row']}:{letter_end}{data_subjects['last_row']}"
-        # =ОКРУГЛ(ЕСЛИОШИБКА(СРЗНАЧЕСЛИМН('П1-18 (БН)'!$C4:$EB4;'П1-18 (БН)'!$C$22:$EB$22;'Ведомость усп.и посещ.'!D$4); 2); 0)
         for title_subject in self.subjects:
-            letter_subject = Coord.get_column_letter(self.end_col_subjects)
             # Оценки по предмету
+            letter_subject = Coord.get_column_letter(self.end_col_subjects)
             for i in range(1, num_students + 1):
                 pos_student = data_subjects['result_start_row'] + i - 1
                 title = f"=ROUND(" \
                         f"IFERROR(" \
                         f"AVERAGEIFS('{data_subjects['name_sheet']}'!{letter_start}{pos_student}:{letter_end}{pos_student}," \
                         f"'{data_subjects['name_sheet']}'!{range_subjects}," \
-                        f"'{self.NAME_SHEET}'!{letter_subject}{}" \
+                        f"'{self.NAME_SHEET}'!{letter_subject}{current_row}" \
                         f")," \
                         f"2)," \
                         f"0)"
-                print(title, self.end_col_subjects)
                 Coord([current_row + i, self.end_col_subjects], border=bc.get_border_thin(), title=title) \
                     .draw(ws=self.ws, type_size=Coord.CELL_SIZE_TYPE_MAX)
             # Название предмета
@@ -149,13 +147,13 @@ class MainSheet:
         letter_end = Coord.get_column_letter(self.end_col_subjects)
 
         for i in range(1, num_rows + 1):
-            title = f"=AVERAGE({letter_start}{row}:{letter_end}{row})"
+            title = f"=ROUND(AVERAGE({letter_start}{row}:{letter_end}{row}),2)"
             Coord([row, self.last_col], border=bc.get_border_thin(left=bc.MEDIUM, right=bc.MEDIUM), font=fc(),
                   title=title).draw(ws=self.ws, type_size=Coord.CELL_SIZE_TYPE_MAX)
             row += 1
 
         letter = Coord.get_column_letter(self.last_col)
-        title = f"=AVERAGE({letter}{start_row + 2}:{letter}{row - 1})"
+        title = f"=ROUND(AVERAGE({letter}{start_row + 2}:{letter}{row - 1}),2)"
         Coord([row, self.last_col], border=bc.get_border_medium(), font=fc(), title=title) \
             .draw(ws=self.ws, type_size=Coord.CELL_SIZE_TYPE_MAX, cell_len=10)
 
@@ -260,7 +258,7 @@ class MainSheet:
         print("Создание столбца с итоговым результатом")
 
         current_row = self.last_row + 2
-        coord_count_students = f'A{self.last_row - 1}'
+        coord_count_students = f'A{self.last_row - 2}'
 
         coord_not_two = f'{Coord.get_column_letter(self.last_col - 1)}{self.last_row}'
         title = f'=({coord_count_students}-{coord_not_two})/{coord_count_students}'
