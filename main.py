@@ -12,7 +12,7 @@ def main():
     # driver.auth()
 
     # Месяц
-    month = 10
+    month = 11
     # Год
     year = 2021
     # Семестр
