@@ -86,38 +86,45 @@ class SkipSheet:
             for day_week in range(1, 8):
                 day = week.get(day_week, -1)
                 if day != -1:
-                    update_day = sh.get_lessons(day)
+                    try:
+                        current_date = self.all_days[count_days]
+                        update_day = sh.get_lessons(day)
 
-                    border_empty = bc.get_border(top=bc.BOLD, bottom=bc.MEDIUM)
-                    border_number_lesson = bc.get_border_thin()
-                    border_subjects = bc.get_border_bold(left=bc.NONE, right=bc.NONE)
+                        border_empty = bc.get_border(top=bc.BOLD, bottom=bc.MEDIUM)
+                        border_number_lesson = bc.get_border_thin()
+                        border_subjects = bc.get_border_bold(left=bc.NONE, right=bc.NONE)
 
-                    lessons = sorted(update_day.keys())
-                    last_lesson = lessons[-1]
-                    for lesson in lessons:
-                        if lesson == last_lesson:
-                            border_empty = bc.get_border_medium(top=bc.BOLD, left=bc.NONE)
-                            border_number_lesson = bc.get_border_thin(right=bc.MEDIUM)
-                            border_subjects = bc.get_border_bold(left=bc.NONE, right=bc.MEDIUM)
-                        # Пустые колонки сверху
-                        Coord([row, col], ws=self.ws, border=border_empty).draw(
-                            font=fc(bold=True, size=fc.FONT_SIZE_MINI), cell_len=Coord.CELL_LEN_AUTO_VERTICAL)
-                        # Номер пары
-                        Coord([row + 2, col], ws=self.ws, title=sh.get_char_lesson(lesson), font=fc(bold=True)) \
-                            .draw(cell_len=8, border=border_number_lesson)
-                        # Название пары
-                        Coord([self.last_row, col], ws=self.ws, title=update_day[lesson], border=border_subjects) \
-                            .draw(font=fc(bold=True, size=fc.FONT_SIZE_MINI), cell_len=Coord.CELL_LEN_AUTO_VERTICAL)
-                        col += 1
-                    # Дата
-                    Coord([row + 1, col - len(lessons)], [row + 1, col - 1], ws=self.ws, font=fc(bold=True), cell_len=8,
-                          border=bc.get_border(right=bc.MEDIUM), title=self.all_days[count_days]).draw()
-                    self.data_schedule[self.all_days[count_days]] = col - 1
-                    count_days += 1
+                        lessons = sorted(update_day.keys())
+                        last_lesson = lessons[-1]
+                        for lesson in lessons:
+                            if lesson == last_lesson:
+                                border_empty = bc.get_border_medium(top=bc.BOLD, left=bc.NONE)
+                                border_number_lesson = bc.get_border_thin(right=bc.MEDIUM)
+                                border_subjects = bc.get_border_bold(left=bc.NONE, right=bc.MEDIUM)
+                            # Пустые колонки сверху
+                            Coord([row, col], ws=self.ws, border=border_empty).draw(
+                                font=fc(bold=True, size=fc.FONT_SIZE_MINI), cell_len=Coord.CELL_LEN_AUTO_VERTICAL)
+                            # Номер пары
+                            Coord([row + 2, col], ws=self.ws, title=sh.get_char_lesson(lesson), font=fc(bold=True)) \
+                                .draw(cell_len=8, border=border_number_lesson)
+                            # Название пары
+                            Coord([self.last_row, col], ws=self.ws, title=update_day[lesson], border=border_subjects) \
+                                .draw(font=fc(bold=True, size=fc.FONT_SIZE_MINI), cell_len=Coord.CELL_LEN_AUTO_VERTICAL)
+                            col += 1
+
+                        # Дата
+                        Coord([row + 1, col - len(lessons)], [row + 1, col - 1], ws=self.ws, font=fc(bold=True), cell_len=8,
+                              border=bc.get_border(right=bc.MEDIUM), title=current_date).draw()
+                        self.data_schedule[current_date] = col - 1
+                        count_days += 1
+                    except IndexError:
+                        lesson_error = list(day.values())[0]
+                        print(f'Я буду дальше работать... НО, страница успеваемости предмета "{lesson_error}" не расписанию')
+                        break
 
         Coord([start_row, col], [start_row + 2, col], title="ПРОПУЩЕНО (часов)", ws=self.ws,
               font=fc(bold=True, size=fc.FONT_SIZE_MINI), type_size=Coord.CELL_LEN_AUTO_VERTICAL,
-              border=bc.get_border_bold(left=bc.MEDIUM, bottom=bc.THIN)).draw()
+              border=bc.get_border_bold(left=bc.BOLD, bottom=bc.THIN)).draw()
         self.col_end = col - 1
 
     def create_skip_skip(self, start_row, start_col):

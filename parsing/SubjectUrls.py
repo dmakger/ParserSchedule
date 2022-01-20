@@ -51,8 +51,8 @@ class SubjectUrls:
             url = cols[-1].find('a').get('href')
             urls_lessons[lesson] = self.URL_MAIN_PAGE + url
 
-        print(lessons)
-        print(urls_lessons)
+        # print(lessons)
+        # print(urls_lessons)
         # Если есть сортировщик lessons
         if lessons is not None:
             new_urls_lessons = dict()

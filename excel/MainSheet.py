@@ -84,14 +84,14 @@ class MainSheet:
             letter_subject = Coord.get_column_letter(self.end_col_subjects)
             for i in range(1, num_students + 1):
                 pos_student = data_subjects['result_start_row'] + i - 1
-                title = f"=ROUND(" \
-                        f"IFERROR(" \
+                title = f"=IFERROR(" \
+                        f"ROUND(" \
                         f"AVERAGEIFS('{data_subjects['name_sheet']}'!{letter_start}{pos_student}:{letter_end}{pos_student}," \
                         f"'{data_subjects['name_sheet']}'!{range_subjects}," \
                         f"'{self.NAME_SHEET}'!{letter_subject}{current_row}" \
                         f")," \
-                        f"2)," \
-                        f"0)"
+                        f"0)," \
+                        f"\"\")"
                 Coord([current_row + i, self.end_col_subjects], border=bc.get_border_thin(), title=title) \
                     .draw(ws=self.ws, type_size=Coord.CELL_SIZE_TYPE_MAX)
             # Название предмета
@@ -145,13 +145,14 @@ class MainSheet:
         letter_end = Coord.get_column_letter(self.end_col_subjects)
 
         for i in range(1, num_rows + 1):
-            title = f"=ROUND(AVERAGE({letter_start}{row}:{letter_end}{row}),2)"
+            title = f"=IFERROR(ROUND(AVERAGEIF({letter_start}{row}:{letter_end}{row},\"<>\",{letter_start}{row}:{letter_end}{row}),2),\"\")"
             Coord([row, self.last_col], border=bc.get_border_thin(left=bc.MEDIUM, right=bc.MEDIUM), font=fc(),
                   title=title).draw(ws=self.ws, type_size=Coord.CELL_SIZE_TYPE_MAX)
             row += 1
 
         letter = Coord.get_column_letter(self.last_col)
-        title = f"=ROUND(AVERAGE({letter}{start_row + 2}:{letter}{row - 1}),2)"
+        # =ЕСЛИОШИБКА(ОКРУГЛ(СРЗНАЧЕСЛИ(E5:E22;"<>";E5:E22);2);2)
+        title = f"=IFERROR(ROUND(AVERAGEIF({letter}{start_row + 1}:{letter}{row - 1},\"<>\",{letter}{start_row + 1}:{letter}{row - 1}),2), \"\")"
         Coord([row, self.last_col], border=bc.get_border_medium(), font=fc(), title=title) \
             .draw(ws=self.ws, type_size=Coord.CELL_SIZE_TYPE_MAX, cell_len=10)
 
@@ -224,7 +225,11 @@ class MainSheet:
         letter_start = Coord.get_column_letter(self.start_col_subjects)
         letter_end = Coord.get_column_letter(self.end_col_subjects)
         for i in range(1, num_rows + 1):
-            title = f'=IF(COUNTIF({letter_start}{row}:{letter_end}{row},2),0,1)'
+            # =ЕСЛИ(ИЛИ(СЧЁТЕСЛИ(C7:D7;2);СЧЁТЕСЛИ(C7:D7;""));0;1)
+            title = f'=IF(' \
+                    f'COUNTIF({letter_start}{row}:{letter_end}{row},2)' \
+                    f'+ COUNTIF({letter_start}{row}:{letter_end}{row},\"\")' \
+                    f',0,1)'
             Coord([row, self.last_col], font=fc(), title=title).draw(ws=self.ws, type_size=Coord.CELL_SIZE_TYPE_MAX)
             row += 1
 
@@ -243,7 +248,11 @@ class MainSheet:
         letter_start = Coord.get_column_letter(self.start_col_subjects)
         letter_end = Coord.get_column_letter(self.end_col_subjects)
         for i in range(1, num_rows + 1):
-            title = f'=IF(COUNTIF({letter_start}{row}:{letter_end}{row},2) + COUNTIF({letter_start}{row}:{letter_end}{row},3),0,1)'
+            title = f'=IF(' \
+                    f'COUNTIF({letter_start}{row}:{letter_end}{row},2) ' \
+                    f'+ COUNTIF({letter_start}{row}:{letter_end}{row},3)' \
+                    f'+ COUNTIF({letter_start}{row}:{letter_end}{row},\"\")' \
+                    f',0,1)'
             Coord([row, self.last_col], font=fc(), title=title).draw(ws=self.ws, type_size=Coord.CELL_SIZE_TYPE_MAX)
             row += 1
 
@@ -256,10 +265,11 @@ class MainSheet:
         print("Создание столбца с итоговым результатом")
 
         current_row = self.last_row + 2
-        coord_count_students = f'A{self.last_row - 2}'
+        coord_count_students = f'A{self.last_row - 1}'
 
         coord_not_two = f'{Coord.get_column_letter(self.last_col - 1)}{self.last_row}'
-        title = f'=({coord_count_students}-{coord_not_two})/{coord_count_students}'
+        # =2-A22/G23
+        title = f'={coord_not_two}/{coord_count_students}'
         Coord([current_row, 1], [current_row, 4], ws=self.ws, title="Успеваемость", cell_len=5) \
             .draw(align=ac(horizontal=ac.RIGHT))
         Coord([current_row, 5], ws=self.ws, title=title, height=16, cell_len=5, title_format=10) \
