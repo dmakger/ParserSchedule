@@ -8,7 +8,7 @@
 ~~~~
 pip install -r requirements.txt
 ~~~~
-Также скачайте **Google Chrome** ==> **https://www.google.ru/chrome/**  
+Также скачайте **Google Chrome** если он у вас не установлен ==> **https://www.google.ru/chrome/**  
 
 ## Работа с кодом  
 Вам надо перейти в файл **main.py** и в переменные **month**, **year**, **term**, ввести ваши данные.  
