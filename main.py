@@ -8,19 +8,24 @@ import data
 
 REAL = 1
 TEST = 2
+
 START = True
 STOP = False
 
 
 def main():
     # Месяц
-    month = 10
+    month = 1
     # Год
-    year = 2021
+    year = 2022
     # Семестр
     term = 7
 
+    # REAL - парсинг
+    # TEST - тестовые значения
     key = REAL
+
+    # Запуск создания файла
     start = START
 
     if key == REAL:
