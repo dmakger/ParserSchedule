@@ -1,2 +1,4 @@
-kkmt_login = "gerasimovda.22"  # Ваш логин от портала ккмт
-kkmt_password = "as73812ger"  # Ваш пароль от портала ккмт
+# kkmt_login = "login"
+kkmt_login = ""  # Ваш логин от портала ккмт
+# kkmt_password = "password"
+kkmt_password = ""  # Ваш пароль от портала ккмт
