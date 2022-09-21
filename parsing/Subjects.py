@@ -47,19 +47,31 @@ class Subjects:
         peoples:dict -> вернет успеваемость каждого студента
         """
         soup = BeautifulSoup(html, 'html.parser')
-        table = soup.find('table', class_="scorestable")
+        table = soup.find('table', class_="fl_left scorestable")
         dates = self.get_header(table)
 
         peoples = dict()
         rows = table.find('tbody').find_all('tr')
+        print(rows[0])
+        print("\n\n\n\n")
         for row in rows:
-            name = row.find('span', class_="j_filter_by_fio").get_text().split('. ')[1]
+            name = row.find('span', class_="j_filter_by_fio").get_text().split('. ')[1].strip()
             peoples[name] = dict()
-            cols = row.find_all('td', class_="journal_ltype_0")
+
+            # Лекции
+            cols_l = row.find_all('td', class_="journal_ltype_1")
+            # Практики
+            cols2_p = row.find_all('td', class_="journal_ltype_2")
+            cols = cols_l + cols2_p
             for i in range(len(cols)):
-                col_text = cols[i].get_text()
-                if (col_text != "") and (dates.get(i, -1) != -1):
-                    peoples[name][dates[i]] = col_text
+                print('---')
+                # print(cols[i])
+                # print(cols[i].find('span'))
+                if cols[i].find('span') is None:
+                    col_text = cols[i].get_text().strip()
+                    print(col_text)
+                    if (col_text != "") and (dates.get(i, -1) != -1):
+                        peoples[name][dates[i]] = col_text
         return peoples
 
     def get_header(self, table):

@@ -15,11 +15,11 @@ STOP = False
 
 def main():
     # Месяц
-    month = 1
+    month = 9
     # Год
     year = 2022
     # Семестр
-    term = 7
+    term = 1
 
     # REAL - парсинг
     # TEST - тестовые значения

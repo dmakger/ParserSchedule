@@ -94,11 +94,7 @@ class Schedule:
                 if info and not td.find('div', class_='item_holiday'):
                     index = int(td.get('data-stt-day'))
                     if (index >= start) and (index <= end):
-                        # lesson = info.get('data-original-title').split('(')[-1].split(' - ')[1]
-                        s_sub = info.get('data-original-title').split('(')[0]
-                        if '</span>' in s_sub:
-                            s_sub = s_sub.split('</span>')[1]
-                        lesson = ".".join(s_sub.split('.')[1:-2]).strip()
+                        lesson = info.get('data-content').split('.')[1].strip()
                         if schedule.get(index, -1) == -1:
                             schedule[index] = dict()
                         schedule[index][int(td.get('data-stt-time'))] = lesson
@@ -111,6 +107,7 @@ class Schedule:
         data:list -> вернет все пары в течении месяца
         """
         range_date = self.get_range_date()
+        print(range_date)
         pages_count = len(range_date)
         data = list()
 
