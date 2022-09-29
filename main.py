@@ -36,6 +36,7 @@ def main():
         # Получение всего расписания
         schedule = Schedule(driver=driver.driver, month=month, year=year)
         schedule_result = schedule.parse()
+        print(schedule_result)
         all_lesson = schedule.all_lesson
         print(f'Предметы в течении месяца: {all_lesson}')
         print('Расписание предметов:')

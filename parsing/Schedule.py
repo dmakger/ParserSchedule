@@ -87,6 +87,7 @@ class Schedule:
             self.all_lesson = list()
 
         items = table.find('tbody').find_all('tr')
+        # print(items)
         for item in items:
             cols = item.find_all('td')
             for td in cols:

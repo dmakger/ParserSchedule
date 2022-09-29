@@ -29,6 +29,7 @@ class DriverHelper:
         return driver
 
     def install_auth(self):
+        print('install_auth')
         try:
             url = self.URL_LOGIN
             self.driver.get(url=url)
